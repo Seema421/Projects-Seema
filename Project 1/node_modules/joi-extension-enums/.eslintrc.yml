@@ -1,0 +1,11 @@
+extends: airbnb-base
+plugins:
+  - node
+  - jest
+env:
+  node: true,
+  jest: true,
+  es6: true,
+rules:
+  no-underscore-dangle: 0
+  indent: 4
