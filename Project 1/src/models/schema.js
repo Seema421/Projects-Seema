@@ -21,4 +21,3 @@ const schema = Joi.object({
 module.exports ={
     schema
 }
-// module.exports = {('AuthorProject', schema)}

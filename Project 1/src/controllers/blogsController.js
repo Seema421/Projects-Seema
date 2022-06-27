@@ -30,7 +30,7 @@ const updateBlogs = async function (req, res) {
     try {
         let update = req.body;
         console.log(req.token)
-        update.authorId = req.token.authorId//verifies author is setting up set after checking body is empty or not
+        //update.authorId = req.token.authorId//verifies author is setting up set after checking body is empty or not
         let data = Object.keys(update)
         if (!data.length) return res.status(404).send({ status: false, msg: "Data can not be empty" })
 
@@ -42,10 +42,10 @@ const updateBlogs = async function (req, res) {
         //console.log(blogid)
         let authorIdTryingtoUpdate = blogid.authorId.toString();//id which is cmg is in object form have to convert it into string
         //console.log(authorIdTryingtoUpdate)
-        // let token = req.headers["x-api-key"]
-        // let decodedToken = jwt.verify(token, 'Project-1');
-        // if (!decodedToken) return res.status(403).send({ status: false, msg: "User is not Authorised to make changes" });
-        // let verifiedAuthor = decodedToken.userid
+        let token = req.headers["x-api-key"]
+            let decodedToken = jwt.verify(token, 'Project-1');
+        if (!decodedToken) return res.status(403).send({ status: false, msg: "User is not Authorised to make changes" });
+        let verifiedAuthor = decodedToken.userid
         // console.log(verifiedAuthor)
         if (authorIdTryingtoUpdate !== verifiedAuthor) return res.status(403).send({ status: false, msg: "This request can not be processed" });
         let updatedblog = await blogsModel.findOneAndUpdate(
@@ -74,7 +74,7 @@ const deletedBlog = async function (req, res) {
         if (authorTryingToUpdate !== authorLoggedin) return res.status(405).send({ status: false, msg: "User is not allowed to access this data" })
         let deletedBlog = await blogsModel.findOneAndUpdate(
             { $and: [{ isDeleted: false }, { _id: blog }] },
-            { $set: { isDeleted: true } },
+            { $set: { isDeleted: true,isDeletedAt:new Date() } },
             { new: true }
         )
         return res.status(200).send({ status: true, msg: deletedBlog })
