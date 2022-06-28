@@ -11,12 +11,13 @@ const authenticate = async function (req, res, next) {
          if(!token) token =req.headers["X-Api-Key"];
         if (!token) return res.status(400).send({ status: false, msg: "Token Required" });
         let decodedToken = jwt.verify(token, "ProjectBlog")   
-        if (!decodedToken) return res.status(403).send({ status: false, msg: "Not Authorised" });
-        let author = req.params.authorId;
-        console.log(author);
-        let authorSignedUp = decodedToken.userid;
-        console.log(authorSignedUp);
-        if (author !== authorSignedUp) return res.status(403).send({ status: false, msg: "Validation Failed" });
+        if (!decodedToken) return res.status(401).send({ status: false, msg: "Not Authorised" });
+        //let author = req.params.authorId;
+        // let author = req.params.blogsId
+        // console.log(author);
+        // let authorSignedUp = decodedToken.authorId;
+        // console.log(authorSignedUp);
+        // if (author !== authorSignedUp) return res.status(403).send({ status: false, msg: "Validation Failed" });
         next()
     }
     catch (err) {
