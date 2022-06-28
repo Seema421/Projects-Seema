@@ -21,6 +21,7 @@
     "hapi-mongodb": "^10.0.3",
     "joi": "^17.6.0",
     "joi-extension-enums": "^1.0.4",
+    "joi-objectid": "^4.0.2",
     "js-array-module": "^0.11.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.3",

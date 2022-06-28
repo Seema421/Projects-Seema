@@ -1,4 +1,4 @@
-const { result } = require("@hapi/joi/lib/base")
+const { result } = require("@hapi/joi/lib/base")//we are using this to get result from hapijoi
 const jwt = require("jsonwebtoken")
 const authorModel = require("../models/authorModel")
 const blogsModel = require("../models/blogsModel")
@@ -12,7 +12,7 @@ const schemaAuthor = async function (req, res) {
         const result = await schema.validateAsync(req.body)//using joi ist we will validate out req.body after validation it will move to next line.It will not save data for savoing data we used authormodel
         let savedData = await authorModel.create(data)
         console.log(savedData)
-        res.send(savedData)
+        res.status(201).send(savedData)
     }
     catch (error) {
         if (error.isJoi === true) error.status = 422
@@ -23,11 +23,12 @@ const schemaAuthor = async function (req, res) {
 //signup done now Author will login//POST LOGIN 
 const authorLogin = async function (req, res) {
     try{
-        let userName = req.body.emailId
+        let userName = req.body.email
+       if(!userName) return res.status(400).send({msg:"Email is required"})
         let passWord = req.body.password
         let data = Object.keys(userName,passWord);
         if(!data.length) return res.status(400).send({status:false, msg:"Email Id and password is required to login"})
-        let author = await authorModel.findOne({ emailId: userName, password: passWord })
+        let author = await authorModel.findOne({ email: userName, password: passWord })
         console.log(author)
         if (!author) return res.status(400).send({ status: false, msg: "Data not found" })
         let token = await jwt.sign({ userid: author._id.toString() }, "Project-1")

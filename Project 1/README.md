@@ -1,223 +1,56 @@
-# update-notifier
+//Blogging Site Mini Project Requirement//
 
-> Update notifications for your CLI app
+Phase I
 
-![](screenshot.png)
+// Models
 
-Inform users of your package of updates in a non-intrusive way.
+// Author Model { fname: { mandatory}, lname: {mandatory}, title: {mandatory, enum[Mr, Mrs, Miss]}, email: {mandatory, valid email, unique}, password: {mandatory} }
 
-#### Contents
+// Blogs Model { title: {mandatory}, body: {mandatory}, authorId: {mandatory, refs to author model}, tags: {array of string}, category: {string, mandatory, examples: [technology, entertainment, life style, food, fashion]}, subcategory: {array of string, examples[technology-[web development, mobile development, AI, ML etc]] }, createdAt, updatedAt, deletedAt: {when the document is deleted}, isDeleted: {boolean, default: false}, publishedAt: {when the blog is published}, isPublished: {boolean, default: false}}
 
-- [Install](#install)
-- [Usage](#usage)
-- [How](#how)
-- [API](#api)
-- [About](#about)
-- [Users](#users)
+Author APIs /authors
 
-## Install
+Create an author - atleast 5 authors Create a author document from request body. Endpoint: BASE_URL/authors
 
-```
-$ npm install update-notifier
-```
+POST /blogs Create a blog document from request body. Get authorId in request body only.
 
-## Usage
+Make sure the authorId is a valid authorId by checking the author exist in the authors collection.
 
-### Simple
+Return HTTP status 201 on a succesful blog creation. Also return the blog document. The response should be a JSON object like this
 
-```js
-const updateNotifier = require('update-notifier');
-const pkg = require('./package.json');
+Create atleast 5 blogs for each author
 
-updateNotifier({pkg}).notify();
-```
+Return HTTP status 400 for an invalid request with a response body
 
-### Comprehensive
+GET /blogs Returns all blogs in the collection that aren't deleted and are published Return the HTTP status 200 if any documents are found. If no documents are found then return an HTTP status 404 with a response
 
-```js
-const updateNotifier = require('update-notifier');
-const pkg = require('./package.json');
+Filter blogs list by applying filters. Query param can have any combination of below filters. By author Id By category
 
-// Checks for available update and returns an instance
-const notifier = updateNotifier({pkg});
+List of blogs that have a specific tag
 
-// Notify using the built-in convenience method
-notifier.notify();
+List of blogs that have a specific subcategory example of a query url: blogs?filtername=filtervalue&f2=fv2
 
-// `notifier.update` contains some useful info about the update
-console.log(notifier.update);
-/*
-{
-	latest: '1.0.1',
-	current: '1.0.0',
-	type: 'patch', // Possible values: latest, major, minor, patch, prerelease, build
-	name: 'pageres'
-}
-*/
-```
+PUT /blogs/:blogId Updates a blog by changing the its title, body, adding tags, adding a subcategory. (Assuming tag and subcategory received in body is need to be added)
 
-### Options and custom message
+Updates a blog by changing its publish status i.e. adds publishedAt date and set published to true Check if the blogId exists (must have isDeleted false). If it doesn't, return an HTTP status 404 with a response body like this
 
-```js
-const notifier = updateNotifier({
-	pkg,
-	updateCheckInterval: 1000 * 60 * 60 * 24 * 7 // 1 week
-});
+Return an HTTP status 200 if updated successfully with a body like this Also make sure in the response you return the updated blog document.
 
-if (notifier.update) {
-	console.log(`Update available: ${notifier.update.latest}`);
-}
-```
+DELETE /blogs/:blogId Check if the blogId exists( and is not deleted). If it does, mark it deleted and return an HTTP status 200 without any response body. If the blog document doesn't exist then return an HTTP status of 404 with a body like this DELETE /blogs?queryParams Delete blog documents by category, authorid, tag name, subcategory name, unpublished If the blog document doesn't exist then return an HTTP status of 404 with a body like this
 
-## How
+//Phase II Add authentication and authroisation feature
 
-Whenever you initiate the update notifier and it's not within the interval threshold, it will asynchronously check with npm in the background for available updates, then persist the result. The next time the notifier is initiated, the result will be loaded into the `.update` property. This prevents any impact on your package startup performance.
-The update check is done in a unref'ed [child process](https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options). This means that if you call `process.exit`, the check will still be performed in its own process.
+POST /login Allow an author to login with their email and password. On a successful login attempt return a JWT token contatining the authorId If the credentials are incorrect return a suitable error message with a valid HTTP status code
 
-The first time the user runs your app, it will check for an update, and even if an update is available, it will wait the specified `updateCheckInterval` before notifying the user. This is done to not be annoying to the user, but might surprise you as an implementer if you're testing whether it works. Check out [`example.js`](example.js) to quickly test out `update-notifier` and see how you can test that it works in your app.
+Authentication Add an authorisation implementation for the JWT token that validates the token before every protected endpoint is called. If the validation fails, return a suitable error message with a corresponding HTTP status code Protected routes are create a blog, edit a blog, get the list of blogs, delete a blog(s) Set the token, once validated, in the request - x-api-key Use a middleware for authentication purpose.
 
-## API
+Authorisation Make sure that only the owner of the blogs is able to edit or delete the blog. In case of unauthorized access return an appropirate error message. Testing (Self-evaluation During Development) To test these apis create a new collection in Postman named Project 1 Blogging Each api should have a new request in this collection Each request in the collection should be rightly named. Eg Create author, Create blog, Get blogs etc Each member of each team should have their tests in running state
 
-### notifier = updateNotifier(options)
+//Refer below sample
 
-Checks if there is an available update. Accepts options defined below. Returns an instance with an `.update` property if there is an available update, otherwise `undefined`.
+A Postman collection and request sample
 
-### options
+Response Successful Response structure { status: true, data: {
 
-Type: `object`
+} } Error Response structure { status: false, msg: "" }
 
-#### pkg
-
-Type: `object`
-
-##### name
-
-*Required*\
-Type: `string`
-
-##### version
-
-*Required*\
-Type: `string`
-
-#### updateCheckInterval
-
-Type: `number`\
-Default: `1000 * 60 * 60 * 24` *(1 day)*
-
-How often to check for updates.
-
-#### shouldNotifyInNpmScript
-
-Type: `boolean`\
-Default: `false`
-
-Allows notification to be shown when running as an npm script.
-
-#### distTag
-
-Type: `string`\
-Default: `'latest'`
-
-Which [dist-tag](https://docs.npmjs.com/adding-dist-tags-to-packages) to use to find the latest version.
-
-### notifier.fetchInfo()
-
-Check update information.
-
-Returns an `object` with:
-
-- `latest` _(String)_ - Latest version.
-- `current` _(String)_ - Current version.
-- `type` _(String)_ - Type of current update. Possible values: `latest`, `major`, `minor`, `patch`, `prerelease`, `build`.
-- `name` _(String)_ - Package name.
-
-### notifier.notify(options?)
-
-Convenience method to display a notification message. *(See screenshot)*
-
-Only notifies if there is an update and the process is [TTY](https://nodejs.org/api/process.html#process_a_note_on_process_i_o).
-
-#### options
-
-Type: `object`
-
-##### defer
-
-Type: `boolean`\
-Default: `true`
-
-Defer showing the notification to after the process has exited.
-
-##### message
-
-Type: `string`\
-Default: [See above screenshot](https://github.com/yeoman/update-notifier#update-notifier-)
-
-Message that will be shown when an update is available.
-
-Available placeholders:
-
-- `{packageName}` - Package name.
-- `{currentVersion}` - Current version.
-- `{latestVersion}` - Latest version.
-- `{updateCommand}` - Update command.
-
-```js
-notifier.notify({message: 'Run `{updateCommand}` to update.'});
-
-// Output:
-// Run `npm install update-notifier-tester@1.0.0` to update.
-```
-
-##### isGlobal
-
-Type: `boolean`\
-Default: Auto-detect
-
-Include the `-g` argument in the default message's `npm i` recommendation. You may want to change this if your CLI package can be installed as a dependency of another project, and don't want to recommend a global installation. This option is ignored if you supply your own `message` (see above).
-
-##### boxenOptions
-
-Type: `object`\
-Default: `{padding: 1, margin: 1, align: 'center', borderColor: 'yellow', borderStyle: 'round'}` *(See screenshot)*
-
-Options object that will be passed to [`boxen`](https://github.com/sindresorhus/boxen).
-
-### User settings
-
-Users of your module have the ability to opt-out of the update notifier by changing the `optOut` property to `true` in `~/.config/configstore/update-notifier-[your-module-name].json`. The path is available in `notifier.config.path`.
-
-Users can also opt-out by [setting the environment variable](https://github.com/sindresorhus/guides/blob/main/set-environment-variables.md) `NO_UPDATE_NOTIFIER` with any value or by using the `--no-update-notifier` flag on a per run basis.
-
-The check is also skipped automatically:
-  - on CI
-  - in unit tests (when the `NODE_ENV` environment variable is `test`)
-
-## About
-
-The idea for this module came from the desire to apply the browser update strategy to CLI tools, where everyone is always on the latest version. We first tried automatic updating, which we discovered wasn't popular. This is the second iteration of that idea, but limited to just update notifications.
-
-## Users
-
-There are a bunch projects using it:
-
-- [npm](https://github.com/npm/npm) - Package manager for JavaScript
-- [Yeoman](https://yeoman.io) - Modern workflows for modern webapps
-- [AVA](https://avajs.dev) - Simple concurrent test runner
-- [XO](https://github.com/xojs/xo) - JavaScript happiness style linter
-- [Node GH](https://github.com/node-gh/gh) - GitHub command line tool
-
-[And 2700+ more…](https://www.npmjs.org/browse/depended/update-notifier)
-
----
-
-<div align="center">
-	<b>
-		<a href="https://tidelift.com/subscription/pkg/npm-update_notifier?utm_source=npm-update-notifier&utm_medium=referral&utm_campaign=readme">Get professional support for this package with a Tidelift subscription</a>
-	</b>
-	<br>
-	<sub>
-		Tidelift helps make open source sustainable for maintainers while giving companies<br>assurances about security, maintenance, and licensing for their dependencies.
-	</sub>
-</div>

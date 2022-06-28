@@ -1,23 +1,21 @@
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
+Joi.objectId = require('joi-objectid')(Joi)
 
-const schema = Joi.object({
+const blogsV = Joi.object({
     title: Joi.string()
-    .alphanum()
-    .min(3)
-    .max(30)
     .required(),
-    lname:Joi.string()
-    .alphanum()
-    .min(3)
-    .max(30)
+    body:Joi.string()
     .required(),
-    emailId: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-    title: Joi.string().valid(...["Mr.", "Mrs.", "Miss"]),
-    password:Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+    tags:Joi.array().items(Joi.string()),
+    category:Joi.string(),
+    subcategory:Joi.array().items(Joi.string()),
+    isPublished:Joi.boolean(),
+    authorId: Joi.objectId().required(),
+    
 
 }, { timestamps: true }, { strict: false });
 
 module.exports ={
-    schema
+    blogsV
 }

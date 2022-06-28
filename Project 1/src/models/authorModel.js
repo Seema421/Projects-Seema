@@ -10,7 +10,7 @@ const authorSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    emailId: {
+    email: {
         type: String,
         required: true,
         unique: true
@@ -25,6 +25,6 @@ const authorSchema = new mongoose.Schema({
         required: true
     },
 
-}, { timestamps: true }, { strict: false });
+}, { timestamps: true }, );
 
 module.exports = mongoose.model('AuthorProject', authorSchema)

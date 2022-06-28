@@ -28,9 +28,9 @@ const validation = async function (req, res, next) {
 //only for token generation
 const authentication = async function (req, res, next) {
     try {
-        let userName = req.body.emailId
+        let userName = req.body.email
         let passWord = req.body.password
-        let author = await authorModel.findOne({ emailId: userName, password: passWord })
+        let author = await authorModel.findOne({ email: userName, password: passWord })
         if (!author) res.status(400).send({ msg: "Author is not exist" });
         //if present create jwt token
         let token = await jwt.sign({ userid: author._id.toString() }, "Project-1")
