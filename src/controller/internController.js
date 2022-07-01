@@ -1,4 +1,3 @@
-const { default: mongoose } = require("mongoose");
 const collegeModel = require("../model/collegeModel");
 const internModel = require("../model/internModel");
 const { isValid,  isValidEmail, isValidMobile, isValidCollegeName } = require("../validator/validator");
@@ -34,10 +33,6 @@ const createIntern = async function (req, res) {
 
         const collegeID = collegeNamePresent._id
         data["collegeId"] = collegeID;//we set collegeId in req body so that we can find college with college id
-        // if (data.isDeleted == true) {
-        //     return res.status(400).send({ status: false, msg: "isDeleted must be false" })
-        // }
-
         let savedData = await internModel.create(data)
         return res.status(201).send({ status: true, msg: savedData })
     } catch (err) {
