@@ -33,10 +33,10 @@ const createIntern = async function (req, res) {
             return res.status(400).send({ status: false, message: `no college found by this name: ${collegeName}` })}
 
         const collegeID = collegeNamePresent._id
-        data["collegeId"] = collegeID;
-        if (data.isDeleted == true) {
-            return res.status(400).send({ status: false, msg: "isDeleted must be false" })
-        }
+        data["collegeId"] = collegeID;//we set collegeId in req body so that we can find college with college id
+        // if (data.isDeleted == true) {
+        //     return res.status(400).send({ status: false, msg: "isDeleted must be false" })
+        // }
 
         let savedData = await internModel.create(data)
         return res.status(201).send({ status: true, msg: savedData })
@@ -61,7 +61,7 @@ const getCollege = async function (req, res) {
         let interns = await internModel.find({ collegeId: collegeID, isDeleted: false }, { name: 1, email: 1, mobile: 1 })
         //if we have to array then we can define length also intern.length
         if(!interns.length) return res.status(400).send({ data: { name: collegeDetail.name, fullName: collegeDetail.fullName, logoLink: collegeDetail.logoLink} , Interns :"No Interns associated with this college"})
-        // console.log(interns)
+     
         return res.status(200).send({ data: { name: collegeDetail.name, fullName: collegeDetail.fullName, logoLink: collegeDetail.logoLink, interns: interns.length ? interns : { msg: "No Interns in this college" } } })
     } catch (err) {
         return res.status(500).send({ status: false, msg: err.message })
