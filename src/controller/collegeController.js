@@ -4,6 +4,7 @@ const { isValid, isValidUrl, isValidCollegeName } = require("../Validator/valida
 //POST /functionup/colleges
 const createCollege = async function (req, res) {
     try {
+        res.setHeader('Access-Control-Allow-Origin','*')
         let data = req.body;
        
         if (!('name' in data) || !('fullName' in data) || !("logoLink" in data))
@@ -37,4 +38,4 @@ const createCollege = async function (req, res) {
 }
 module.exports = {
     createCollege
-}
+}//all module are private and making it public to use it anywhere in our app

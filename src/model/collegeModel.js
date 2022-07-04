@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const express = require('express');
+const express = require('express');//to handle our middleware set up and http request
 const router = express.Router();
 
 const collegeSchema = new mongoose.Schema({

@@ -25,7 +25,7 @@ const isValidMobile = (mobile) => {
         return true
 }
 const isValidEmail = (email) => {
-    if (/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(email))
+    if (/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(email.trim()))
         return true
 }
 module.exports = {
