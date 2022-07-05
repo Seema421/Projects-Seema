@@ -35,9 +35,9 @@ const createAuthor = async function (req, res) {
             return res.status(400).send({ status: false, msg: "title shoud be one of Mr, Mrs, Miss" })
         }
         //password validation
-        if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/.test(data.password)) {
-            return res.status(400).send({ status: false, message: `password shoud be 6 to 20 characters which contain at least one numeric digit, one uppercase and one lowercase letter` })
-        }
+        // if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/.test(data.password)) {
+        //     return res.status(400).send({ status: false, message: `password shoud be 6 to 20 characters which contain at least one numeric digit, one uppercase and one lowercase letter` })
+        // }
         let savedData = await authorModel.create(data)
         return res.status(201).send({ msg: savedData })
 
@@ -84,24 +84,5 @@ const loginAuthor = async function (req, res) {
 };
 
 
-
-
-
-
-/*const patterns={
-    fname :/^[a-z\d]{5,12}$/i,
-    lname :/^[a-z\d]{5,12}$/i,
-    emailId :/^([a-z\d]\.-]+)@([a-z\d-]+)\.([a-z])$/,
-    password :/^[\w@-]{8,20}$/,
-};
-
-function validate(field,regex){
-    if(regex.test(field.value)){
-        field.className='valid';
-    }else{
-        field.className='invalid';
-    }
-}
-*/
 module.exports.createAuthor = createAuthor
 module.exports.loginAuthor = loginAuthor

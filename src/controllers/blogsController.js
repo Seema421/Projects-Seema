@@ -123,13 +123,14 @@ const delBlogsByQuery = async function (req, res) {
         
         //console.log(query)
         let data = Object.keys(query)
-        if (!data.length) return res.status(411).send({ status: false, msg: "Data can not be empty" });
+        if (data.length==0) return res.status(411).send({ status: false, msg: "Data can not be empty" });
+        //let query ={isDeleted:false,...quey}
         let blog = await blogsModel.find(query)//.select({ authorId: 1, _id: 1,})
         //blog.isDeleted==true
         console.log(blog)
-        if( !blog) return res.status(404).send({status:false, msg:"Data already deleted"})
+        if( !blog) return res.status(404).send({status:false, msg:"Data not found"})
         let token = req.headers["x-api-key"]
-        if (!token) return res.status(401).send({ status: false, msg: "Author is not authenticated" })
+        if (!token) return res.status(401).send({ status: false, msg: "Author need to login" })
         let decodedToken = jwt.verify(token, "ProjectBlog")
        // console.log(decodedToken)
         if (!decodedToken) return res.status(403).send({ status: false, msg: "User is not authorised" })
@@ -139,11 +140,12 @@ const delBlogsByQuery = async function (req, res) {
         console.log(auth)
         if (auth === undefined) return res.status(404).send({ msg: "no such blog found to delete in your collection" })
         // console.log(req.token)//it will give us author id which is in decoded token and it will give us those author id only which is authorised to update or delete    
-        let deletBlog = await blogsModel.findByIdAndUpdate(
-            {$and :[{isDeleted:false},{_id: auth._id}]},
+        let idOfBlog=auth._id
+        let deletBlog = await blogsModel.findOneAndUpdate(
+            {$and :[{_id: idOfBlog},{isDeleted:false}]},
             { $set: { isDeleted: true, isDeletedAt: new Date() } },
             { new: true })
-        //console.log(deletBlog)
+        if(deletBlog==null) return res.status(404).send({msg:"Data already deleted can not modify"})
         return res.status(200).send({ status: true, msg: deletBlog })
     }
     catch (err) {
