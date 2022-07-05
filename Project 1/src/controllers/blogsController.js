@@ -33,7 +33,7 @@ const returnBlogs = async function (req, res) {
         if (!token) return res.status(401).send({ status: false, msg: "Author is not logedIn/Token Required" })
         let decodedToken = jwt.verify(token, "Project-1")
         if (!decodedToken) return res.status(403).send({ status: false, msg: "Not Authorised" })
-        let blog = await blogsModel.find({ $and: [(query), { isPublished: true }, { isDeleted: false },] })
+        let blog = await blogsModel.find({ $and: [query, { isPublished: true }, { isDeleted: false },] })
         if (blog == false) return res.status(404).send({ status: false, msg: " " })
         console.log(query)
         res.status(200).send({ status: true, msg: blog })
