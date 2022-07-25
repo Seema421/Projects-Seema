@@ -20,6 +20,8 @@ const urlSchema = new mongoose.Schema({
         required:true,
         unique:true
     }
+
+    
 },{timestamps:true})
 
 //---------------------Export
